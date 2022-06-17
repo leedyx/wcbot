@@ -1,0 +1,14 @@
+org\lee\WechatBotApplication.class
+org\lee\Constants$DispatchState.class
+org\lee\pojo\PicMsg.class
+org\lee\WechatBotApplication$1.class
+org\lee\Worker.class
+org\lee\config\AsyncClientConfig.class
+org\lee\Constants$MessageType.class
+org\lee\util\Utils.class
+org\lee\pojo\PicMsgDetail.class
+org\lee\Constants.class
+org\lee\util\Parsers$1.class
+org\lee\util\Parsers.class
+org\lee\util\Parsers$2.class
+org\lee\listener\DispatchListener.class

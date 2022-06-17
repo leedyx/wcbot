@@ -1,0 +1,10 @@
+{
+  "content": "heart beat",
+  "id": "20220610235232",
+  "receiver": "CLIENT",
+  "sender": "SERVER",
+  "srvid": 1,
+  "status": "SUCCSESSED",
+  "time": "2022-06-10 23:52:32",
+  "type": 5005
+}
