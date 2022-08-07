@@ -11,12 +11,17 @@ import org.lee.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Worker implements Runnable {
 
@@ -54,6 +59,41 @@ public class Worker implements Runnable {
                             String detail = res.getPicMsgDetail().getDetail();
                             List<String> urls = Parsers.tryGetUrl(detail);
                             if (Objects.nonNull(urls) && urls.size() > 0) {
+                                urls = urls.stream().filter(item-> {
+                                    return StringUtils.contains(item,"wjx");
+                                }).collect(Collectors.toList());
+
+                                if (urls.size() > 0){
+                                    urls.forEach(url -> {
+                                        LOGGER.info("the url : {}", url);
+
+                                        String from = "D:\\local\\nike_rush\\default.yaml";
+                                        String to = "D:\\local\\nike_rush\\config\\application.yaml";
+
+                                        try {
+
+                                            Path path = Paths.get(from);
+
+                                            byte[] bytes = Files.readAllBytes(path);
+
+                                            String content = new String(bytes);
+                                            String ans = StringUtils.replace(content, "{url}", StringUtils.trim(url));
+                                            Files.write(Paths.get(to), ans.getBytes(StandardCharsets.UTF_8));
+                                            int start = url.lastIndexOf("/");
+                                            int end = url.lastIndexOf(".");
+
+                                            if (start == -1 || end == -1) {
+                                                LOGGER.error("url error !");
+                                            }
+
+                                        } catch (Exception e) {
+                                            LOGGER.error("get short id error !", e);
+                                        }
+                                    });
+
+
+                                }
+
                                 LOGGER.info("urls : {}", urls);
                             }
                         }
