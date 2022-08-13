@@ -8,10 +8,12 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PicMsgDetail {
-    @JsonIgnore
-    private String content;
+
     @JsonProperty("id1")
     private String roomId;
+
+    @JsonProperty("id2")
+    private String senderId;
 
     private String detail;
 }

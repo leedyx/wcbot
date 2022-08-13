@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueue;
 import org.apache.commons.lang3.StringUtils;
-import org.lee.pojo.PicMsg;
-import org.lee.pojo.PicMsgDetail;
-import org.lee.util.Parsers;
+import org.asynchttpclient.ws.WebSocket;
+import org.lee.pojo.MsgInfo;
+import org.lee.util.DatDecoder;
+import org.lee.util.QrCodeParser;
 import org.lee.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,23 +17,30 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class Worker implements Runnable {
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(1);
+    private final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(1);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Worker.class);
 
-    private final MpscArrayQueue<String> queue;
+    private final MpscArrayQueue<MsgInfo> queue;
 
-    public Worker(MpscArrayQueue<String> queue) {
+    private final DatDecoder datDecoder;
+
+    private final QrCodeParser qrCodeParser;
+
+    private final WebSocket webSocket ;
+
+    public Worker(MpscArrayQueue<MsgInfo> queue, DatDecoder datDecoder, QrCodeParser qrCodeParser, WebSocket webSocket) {
         this.queue = queue;
+        this.datDecoder = datDecoder;
+        this.qrCodeParser = qrCodeParser;
+        this.webSocket = webSocket;
     }
 
     public void init() {
@@ -49,58 +57,48 @@ public class Worker implements Runnable {
                 if (queue.size() <= 0) {
                     Utils.safeSleep(TimeUnit.MILLISECONDS, 100);
                 } else {
-                    String message = queue.poll();
-
-                    if (StringUtils.contains(message, "<img aeskey=")) {
-                        PicMsg res = reader.readValue(message, PicMsg.class);
-
-                        if (Objects.nonNull(res.getPicMsgDetail()) && StringUtils.isNotBlank(res.getPicMsgDetail().getDetail())) {
-
-                            String detail = res.getPicMsgDetail().getDetail();
-                            List<String> urls = Parsers.tryGetUrl(detail);
-                            if (Objects.nonNull(urls) && urls.size() > 0) {
-                                urls = urls.stream().filter(item-> {
-                                    return StringUtils.contains(item,"wjx");
-                                }).collect(Collectors.toList());
-
-                                if (urls.size() > 0){
-                                    urls.forEach(url -> {
-                                        LOGGER.info("the url : {}", url);
-
-                                        String from = "D:\\local\\nike_rush\\default.yaml";
-                                        String to = "D:\\local\\nike_rush\\config\\application.yaml";
-
-                                        try {
-
-                                            Path path = Paths.get(from);
-
-                                            byte[] bytes = Files.readAllBytes(path);
-
-                                            String content = new String(bytes);
-                                            String ans = StringUtils.replace(content, "{url}", StringUtils.trim(url));
-                                            Files.write(Paths.get(to), ans.getBytes(StandardCharsets.UTF_8));
-                                            int start = url.lastIndexOf("/");
-                                            int end = url.lastIndexOf(".");
-
-                                            if (start == -1 || end == -1) {
-                                                LOGGER.error("url error !");
-                                            }
-
-                                        } catch (Exception e) {
-                                            LOGGER.error("get short id error !", e);
-                                        }
-                                    });
+                    MsgInfo msgInfo = queue.poll();
+                    if (msgInfo.getType() == 3) {
+                        String imgPath = datDecoder.tryDecodeDat(msgInfo.getContent());
+                        List<String> urls = qrCodeParser.tryParseUrls(imgPath);
+                        if (Objects.nonNull(urls) && urls.size() > 0) {
 
 
+                            urls.forEach(url -> {
+                                LOGGER.info("the url : {}", url);
+
+                                String from = "D:\\local\\nike_rush\\default.yaml";
+                                String to = "D:\\local\\nike_rush\\config\\application.yaml";
+
+                                try {
+
+                                    Path path = Paths.get(from);
+
+                                    byte[] bytes = Files.readAllBytes(path);
+
+                                    String content = new String(bytes);
+                                    String ans = StringUtils.replace(content, "{url}", StringUtils.trim(url));
+                                    Files.write(Paths.get(to), ans.getBytes(StandardCharsets.UTF_8));
+                                    int start = url.lastIndexOf("/");
+                                    int end = url.lastIndexOf(".");
+
+                                    if (start == -1 || end == -1) {
+                                        LOGGER.error("url error !");
+                                    }
+
+                                } catch (Exception e) {
+                                    LOGGER.error("get short id error !", e);
                                 }
 
-                                LOGGER.info("urls : {}", urls);
-                            }
-                        }
-                    }
 
-                    LOGGER.info("message : {}", message);
+                            });
+
+                        }
+                    } else if (msgInfo.getType() == 1) {
+                        LOGGER.info("txt message : {}", msgInfo.getContent());
+                    }
                 }
+
             } catch (Exception e) {
                 LOGGER.error("error !", e);
             }

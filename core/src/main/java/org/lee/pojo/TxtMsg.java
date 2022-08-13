@@ -6,10 +6,16 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PicMsg {
-
-    @JsonProperty("content")
-    private PicMsgDetail picMsgDetail;
+public class TxtMsg {
 
     private String id;
+
+    private String content;
+
+    @JsonProperty("id1")
+    private String senderId;
+
+    @JsonProperty("wxid")
+    private String roomId;
+
 }

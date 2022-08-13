@@ -1,0 +1,12 @@
+self_wxid:
+  'wxid_l518lj9v2axh22'
+ws_url:
+  'ws://localhost:5555'
+local_path_prefix:
+  'D:/Data/wechat/WeChat Files'
+out_path_prefix:
+  'D:/Data/wechat/img'
+qr_code_model_path:
+  'D:/github/wcbot/we_chat_qr_code/'
+master_wxid:
+  'wxid_ef5bjxzlk5l322'
