@@ -23,7 +23,8 @@ public class AsyncClientConfig {
                 .setConnectTimeout(5 * 1000)
                 .setReadTimeout(30 * 1000)
                 .setRequestTimeout(30 * 1000)
-                .setCookieStore(null);
+                .setCookieStore(null)
+                .setWebSocketMaxFrameSize(10240 * 4);
 
         return Dsl.asyncHttpClient(builder.build());
     }
