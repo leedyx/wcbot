@@ -16,3 +16,21 @@ JAVA比pythoin的可维护性好很多
 wechatwin.dll.base + 0x2255C08
 切记
 
+
+```
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.3.3.RELEASE</version>
+                <configuration>
+                    <mainClass>com.lee.rush.RushApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+```
