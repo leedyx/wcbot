@@ -46,6 +46,7 @@ public class WechatBotApplication {
                     @Override
                     public void onOpen(WebSocket websocket) {
                         LOGGER.info("connect to server SUCCESS !");
+                        dispatchListener.onOpen(websocket);
                         websocket.removeWebSocketListener(this);
                         websocket.addWebSocketListener(dispatchListener);
                     }

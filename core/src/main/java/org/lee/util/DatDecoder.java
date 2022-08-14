@@ -70,7 +70,7 @@ public class DatDecoder {
         BufferedOutputStream buffer = null;
         try {
             Path path = Paths.get(localPrefix, datFile);
-            int count = 20;
+            int count = 30;
             File file = path.toFile();
             while (--count >= 0) {
                 if (!file.exists()) {
