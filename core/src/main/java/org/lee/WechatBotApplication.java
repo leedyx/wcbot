@@ -9,6 +9,7 @@ import org.asynchttpclient.ws.WebSocketUpgradeHandler;
 import org.lee.listener.DispatchListener;
 import org.lee.pojo.MsgInfo;
 import org.lee.util.DatDecoder;
+import org.lee.util.GcTasker;
 import org.lee.util.QrCodeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,6 +129,9 @@ public class WechatBotApplication {
         qrCodeParser = new QrCodeParser(wehatQrcodePath);
         worker = new Worker(dispatchListener.getDefaultQueue(), datDecoder, qrCodeParser, websocket);
         worker.init();
+
+        GcTasker gcTasker = new GcTasker();
+        gcTasker.init();
 
     }
 
