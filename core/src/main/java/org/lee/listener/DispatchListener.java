@@ -101,13 +101,13 @@ public class DispatchListener implements WebSocketListener {
                     /**
                      * 图片
                      */
-                    if (StringUtils.contains(payload, "\"type\":3")) {
+                    if (StringUtils.contains(payload, "\"type\":3}")) {
                         PicMsg res = reader.readValue(payload, PicMsg.class);
                         if (Objects.nonNull(res.getPicMsgDetail()) && StringUtils.isNotBlank(res.getPicMsgDetail().getDetail())) {
                             msgInfo = picMsg2MsgInfo(res);
                         }
 
-                    } else if (StringUtils.contains(payload, "\"type\":1")) {
+                    } else if (StringUtils.contains(payload, "\"type\":1,")) {
                         TxtMsg res = reader.readValue(payload, TxtMsg.class);
                         msgInfo = txtMsg2MsgInfo(res);
                     } else {
