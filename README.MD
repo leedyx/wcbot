@@ -34,3 +34,9 @@ wechatwin.dll.base + 0x2255C08
                 </executions>
             </plugin>
 ```
+
+
+```
+java -Dfile.encoding=UTF-8 -Xms512m -Xmx512m -jar core-1.0-SNAPSHOT.jar
+
+```
